@@ -4,4 +4,4 @@ go 1.24
 
 require github.com/linkdata/socks5 v0.0.2
 
-replace github.com/linkdata/socks5 => ../socks5
+// replace github.com/linkdata/socks5 => ../socks5
