@@ -31,7 +31,7 @@ func Auth_None(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 }
 
 func Auth_NoAcceptable(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
 	defer cancel()
 	ts := New(ctx, t, srvfn, clifn, true)
 	defer ts.Close()

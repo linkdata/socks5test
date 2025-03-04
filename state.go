@@ -60,7 +60,7 @@ func New(ctx context.Context, t *testing.T, srvfn ServeFunc, clifn ClientFunc, n
 	}
 	go func() {
 		defer close(ts.srvClosedCh)
-		srvfn(ctx, ts.Srvlistener, username, password)
+		srvfn(ctx, srvlistener, username, password)
 	}()
 
 	return
