@@ -13,7 +13,7 @@ import (
 
 func init() {
 	socks5.UDPTimeout = time.Millisecond * 10
-	// socks5.ListenerTimeout = time.Millisecond * 10
+	socks5.ListenerTimeout = time.Millisecond * 10
 }
 
 var srvfn = func(ctx context.Context, l net.Listener, username, password string) {
