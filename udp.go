@@ -14,8 +14,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-
-	"github.com/linkdata/socks5"
 )
 
 func udpEchoServer(conn net.PacketConn) {
@@ -153,7 +151,8 @@ func UDP_Multiple(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 		}
 	}
 
-	time.Sleep(socks5.UDPTimeout * 2)
+	// allow some time to pass to let server close ports
+	time.Sleep(time.Millisecond * 100)
 
 	echoServer := echoServerListener[echoServerNumber-1]
 	echoAddress := echoServer.LocalAddr()
