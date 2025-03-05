@@ -59,7 +59,10 @@ func UDP_Single(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 	}
 
 	want := make([]byte, 16)
-	rand.Read(want)
+	_, err = rand.Read(want)
+	if err != nil {
+		t.Fatal(err)
+	}
 	_, err = conn.Write(want)
 	if err != nil {
 		t.Fatal(err)
@@ -168,8 +171,9 @@ func UDP_Multiple(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 	if !bytes.Equal(requestBody, responseBody) {
 		t.Errorf("%v got %d: %q want: %q", echoAddress, len(responseBody), responseBody, requestBody)
 	}
-	conn.Close()
-	time.Sleep(socks5.UDPTimeout)
+	if err = conn.Close(); err != nil {
+		t.Error(err)
+	}
 }
 
 func UDP_InvalidPacket(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {

@@ -27,7 +27,7 @@ func Auth_None(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	resp.Body.Close()
+	_ = resp.Body.Close()
 }
 
 func Auth_NoAcceptable(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
@@ -50,7 +50,7 @@ func Auth_NoAcceptable(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 	httpcli.Transport = &http.Transport{DialContext: cli.DialContext}
 	resp, err := httpcli.Get(httpsrv.URL)
 	if resp != nil {
-		resp.Body.Close()
+		_ = resp.Body.Close()
 	}
 	if err == nil {
 		t.Error("expected error")
@@ -74,7 +74,7 @@ func Auth_Password(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	resp.Body.Close()
+	_ = resp.Body.Close()
 }
 
 func Auth_InvalidPassword(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
@@ -97,7 +97,7 @@ func Auth_InvalidPassword(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 	httpcli.Transport = &http.Transport{DialContext: cli.DialContext}
 	resp, err := httpcli.Get(httpsrv.URL)
 	if resp != nil {
-		resp.Body.Close()
+		_ = resp.Body.Close()
 	}
 	if err == nil {
 		t.Error("expected error")
@@ -124,7 +124,7 @@ func Auth_WrongPassword(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 	httpcli.Transport = &http.Transport{DialContext: cli.DialContext}
 	resp, err := httpcli.Get(httpsrv.URL)
 	if resp != nil {
-		resp.Body.Close()
+		_ = resp.Body.Close()
 	}
 	if err == nil {
 		t.Error("expected error")

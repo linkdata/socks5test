@@ -32,7 +32,7 @@ func Resolve_Remote(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	resp.Body.Close()
+	_ = resp.Body.Close()
 }
 
 func Resolve_Remote_InvalidHostname(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
@@ -48,7 +48,7 @@ func Resolve_Remote_InvalidHostname(t *testing.T, srvfn ServeFunc, clifn ClientF
 
 	conn, err := cli.DialContext(ctx, "tcp", "!:1234")
 	if conn != nil {
-		conn.Close()
+		_ = conn.Close()
 	}
 	if err == nil {
 		t.Error("expected error")
@@ -72,7 +72,7 @@ func Resolve_Local(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	resp.Body.Close()
+	_ = resp.Body.Close()
 }
 
 func Resolve_Local_InvalidHostname(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
@@ -83,7 +83,7 @@ func Resolve_Local_InvalidHostname(t *testing.T, srvfn ServeFunc, clifn ClientFu
 
 	conn, err := ts.Client.DialContext(ctx, "tcp", "!:1234")
 	if conn != nil {
-		conn.Close()
+		_ = conn.Close()
 	}
 	if err == nil {
 		t.Error("expected error")

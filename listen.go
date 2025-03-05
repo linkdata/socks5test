@@ -18,7 +18,7 @@ func Listen_SingleRequest(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 	defer ts.Close()
 
 	if cli, ok := ts.Client.(Listener); ok {
-		listenPort := ":" + strconv.Itoa(10000+rand.IntN(1000))
+		listenPort := ":" + strconv.Itoa(10000+rand.IntN(1000)) // #nosec G404
 		listener, err := cli.Listen(ctx, "tcp", listenPort)
 		if err != nil {
 			t.Fatal(err)
@@ -34,14 +34,14 @@ func Listen_SingleRequest(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 		errCh := make(chan error)
 		go func() {
 			defer close(errCh)
-			errCh <- http.Serve(listener, nil)
+			errCh <- http.Serve(listener, nil) // #nosec G114
 		}()
 
 		resp, err := http.Get("http://" + listenAddr.String())
 		if err != nil {
 			t.Fatal(err)
 		}
-		resp.Body.Close()
+		_ = resp.Body.Close()
 
 		err = listener.Close()
 		if err != nil {
@@ -61,7 +61,7 @@ func Listen_SingleRequest(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 		for range 10 {
 			resp, err = http.Get("http://" + listenAddr.String())
 			if err == nil {
-				resp.Body.Close()
+				_ = resp.Body.Close()
 			} else {
 				if strings.Contains(err.Error(), "connection refused") {
 					if err = ctx.Err(); err != nil {
@@ -91,7 +91,7 @@ func Listen_SerialRequests(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 		errCh := make(chan error)
 		go func() {
 			defer close(errCh)
-			errCh <- http.Serve(listener, nil)
+			errCh <- http.Serve(listener, nil) // #nosec G114
 		}()
 
 		for i := range 10 {
@@ -99,7 +99,7 @@ func Listen_SerialRequests(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 			if err != nil {
 				t.Error(i, err)
 			} else {
-				resp.Body.Close()
+				_ = resp.Body.Close()
 			}
 		}
 
@@ -135,7 +135,7 @@ func Listen_ParallelRequests(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 		errCh := make(chan error)
 		go func() {
 			defer close(errCh)
-			errCh <- http.Serve(listener, nil)
+			errCh <- http.Serve(listener, nil) // #nosec G114
 		}()
 
 		var wg sync.WaitGroup
@@ -147,7 +147,7 @@ func Listen_ParallelRequests(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 				if err != nil {
 					t.Error(i, err)
 				} else {
-					resp.Body.Close()
+					_ = resp.Body.Close()
 				}
 			}()
 		}

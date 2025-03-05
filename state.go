@@ -72,7 +72,7 @@ func (ts *State) HostPort() (hostport string) {
 
 func (ts *State) Close() {
 	if ts.Srvlistener != nil {
-		ts.Srvlistener.Close()
+		_ = ts.Srvlistener.Close()
 		ts.Srvlistener = nil
 		tmr := time.NewTimer(time.Second)
 		defer tmr.Stop()
