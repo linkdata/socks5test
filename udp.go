@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/binary"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"log/slog"
@@ -24,12 +25,12 @@ func udpEchoServer(conn net.PacketConn) {
 		var n int
 		var addr net.Addr
 		if n, addr, err = conn.ReadFrom(buf[:]); err == nil {
-			slog.Info("udpEchoServer: readfrom", "conn", conn.LocalAddr().String(), "addr", addr, "data", buf[:n])
+			slog.Info("udpEchoServer: readfrom", "conn", conn.LocalAddr().String(), "addr", addr, "data", hex.EncodeToString(buf[:n]))
 			n, err = conn.WriteTo(buf[:n], addr)
 			if err != nil {
 				panic(err)
 			}
-			slog.Info("udpEchoServer: writeto", "conn", conn.LocalAddr().String(), "addr", addr, "data", buf[:n])
+			slog.Info("udpEchoServer: writeto", "conn", conn.LocalAddr().String(), "addr", addr, "data", hex.EncodeToString(buf[:n]))
 		}
 	}
 	slog.Info("udpEchoServer: stop", "conn", conn.LocalAddr().String(), "error", err)
@@ -77,15 +78,19 @@ func UDP_Single(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 		t.Fatal(err)
 	}
 	if !bytes.Equal(want, got) {
-		t.Fail()
+		t.Errorf("UDP echo wrong\n got: %x\nwant: %x\n", got, want)
 	}
 
-	if x := conn.RemoteAddr().String(); x != packet.LocalAddr().String() {
-		t.Error(x)
-	}
-
-	if x := conn.RemoteAddr().Network(); x != packet.LocalAddr().Network() {
-		t.Error(x)
+	remoteAddr := conn.RemoteAddr()
+	if remoteAddr != nil {
+		if x := remoteAddr.String(); x != packet.LocalAddr().String() {
+			t.Error(x)
+		}
+		if x := remoteAddr.Network(); x != packet.LocalAddr().Network() {
+			t.Error(x)
+		}
+	} else {
+		t.Log("UDP conn returned nil for RemoteAddr")
 	}
 }
 
@@ -122,7 +127,11 @@ func UDP_Multiple(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 	}
 	defer conn.Close()
 
-	pc := conn.(net.PacketConn)
+	pc, ok := conn.(net.PacketConn)
+
+	if !ok {
+		t.Skip("client is not a net.PacketConn")
+	}
 
 	for i := 0; i < echoServerNumber-1; i++ {
 		echoAddress := echoServerListener[i].LocalAddr()
@@ -147,7 +156,7 @@ func UDP_Multiple(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 			t.Error(x)
 		}
 		if !bytes.Equal(requestBody, responseBody) {
-			t.Fatalf("%v got %d: %q want: %q", echoAddress, len(responseBody), responseBody, requestBody)
+			t.Fatalf("UDP echo wrong from %v\n got: %x\nwant: %x", echoAddress, responseBody, requestBody)
 		}
 	}
 

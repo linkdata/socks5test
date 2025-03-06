@@ -1,6 +1,6 @@
 github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 h1:0CwZNZbxp69SHPdPJAN/hZIm0C4OItdklCFmMRWYpio=
 github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5/go.mod h1:wHh0iHkYZB8zMSxRWpUBQtwG5a7fFgvEO+odwuTv2gs=
-github.com/linkdata/socks5 v0.0.2 h1:bzgcS6x+SzyqCWyvu1nsTpi19GCA92ITmtEQsZjt8Zg=
-github.com/linkdata/socks5 v0.0.2/go.mod h1:OOV/ayFnH8foDdcsLbMPTKf6goOcUQwKtao+UbXQJOc=
+github.com/linkdata/socks5 v0.0.4 h1:kiwFtjmpQovcrEcS6AvGtani8rfCm46m1y5YdYhm8VA=
+github.com/linkdata/socks5 v0.0.4/go.mod h1:w48ULJOLp4BNe1DKLvy3z+zkarii0YwTkfZXSnYhfFU=
 golang.org/x/net v0.36.0 h1:vWF2fRbw4qslQsQzgFqZff+BItCvGFQqKzKIzx1rmoA=
 golang.org/x/net v0.36.0/go.mod h1:bFmbeoIPfrw4sMHNhb4J9f6+tPziuGjq7Jk/38fxi1I=

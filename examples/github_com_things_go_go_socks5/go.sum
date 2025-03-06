@@ -1,9 +1,7 @@
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/linkdata/socks5 v0.0.2 h1:bzgcS6x+SzyqCWyvu1nsTpi19GCA92ITmtEQsZjt8Zg=
-github.com/linkdata/socks5 v0.0.2/go.mod h1:OOV/ayFnH8foDdcsLbMPTKf6goOcUQwKtao+UbXQJOc=
-github.com/linkdata/socks5test v0.0.3 h1:4XEgSjQL+/6bqUMuCn9ATC15xtvqHjtTp1OazXAaw10=
-github.com/linkdata/socks5test v0.0.3/go.mod h1:PbI2fG2l9l45MwR8M80mTIyY5iAO+fwy8bTg+BN6UFY=
+github.com/linkdata/socks5 v0.0.4 h1:kiwFtjmpQovcrEcS6AvGtani8rfCm46m1y5YdYhm8VA=
+github.com/linkdata/socks5 v0.0.4/go.mod h1:w48ULJOLp4BNe1DKLvy3z+zkarii0YwTkfZXSnYhfFU=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
