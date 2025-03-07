@@ -58,7 +58,7 @@ func Listen_SingleRequest(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 
 	if cli, ok := ts.Client.(Listener); ok {
 		listenPort := ":" + strconv.Itoa(10000+rand.IntN(1000)) // #nosec G404
-		listener, err := startListen(ctx, cli, listenPort)
+		listener, err := cli.Listen("tcp", listenPort)
 		if err != nil {
 			t.Fatal(err)
 		}
