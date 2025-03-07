@@ -22,8 +22,17 @@ func (tcpAddr) Network() string {
 	return "tcp"
 }
 
+func startListen(ctx context.Context, l Listener, port string) (listener net.Listener, err error) {
+	if cl, ok := l.(ContextListener); ok {
+		listener, err = cl.ListenContext(ctx, "tcp", port)
+	} else {
+		listener, err = l.Listen("tcp", port)
+	}
+	return
+}
+
 func makeListener(t *testing.T, l Listener, ctx context.Context) (net.Listener, net.Addr) {
-	listener, err := l.Listen(ctx, "tcp", ":0")
+	listener, err := startListen(ctx, l, ":0")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -32,7 +41,7 @@ func makeListener(t *testing.T, l Listener, ctx context.Context) (net.Listener, 
 		_ = listener.Close()
 		listenPort := ":" + strconv.Itoa(10000+rand.IntN(1000)) // #nosec G404
 		t.Errorf("listener.Addr() returned nil, forcing port %q", listenPort)
-		listener, err = l.Listen(ctx, "tcp", listenPort)
+		listener, err = startListen(ctx, l, listenPort)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -49,7 +58,7 @@ func Listen_SingleRequest(t *testing.T, srvfn ServeFunc, clifn ClientFunc) {
 
 	if cli, ok := ts.Client.(Listener); ok {
 		listenPort := ":" + strconv.Itoa(10000+rand.IntN(1000)) // #nosec G404
-		listener, err := cli.Listen(ctx, "tcp", listenPort)
+		listener, err := startListen(ctx, cli, listenPort)
 		if err != nil {
 			t.Fatal(err)
 		}

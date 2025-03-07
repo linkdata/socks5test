@@ -5,6 +5,10 @@ import (
 	"net"
 )
 
+type ContextListener interface {
+	ListenContext(ctx context.Context, network, address string) (l net.Listener, err error)
+}
+
 type Listener interface {
-	Listen(ctx context.Context, network, address string) (l net.Listener, err error)
+	Listen(network, address string) (l net.Listener, err error)
 }
