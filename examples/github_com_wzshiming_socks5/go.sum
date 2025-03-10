@@ -1,4 +1,4 @@
-github.com/linkdata/socks5 v0.0.4 h1:kiwFtjmpQovcrEcS6AvGtani8rfCm46m1y5YdYhm8VA=
-github.com/linkdata/socks5 v0.0.4/go.mod h1:w48ULJOLp4BNe1DKLvy3z+zkarii0YwTkfZXSnYhfFU=
+github.com/linkdata/socks5 v0.0.9 h1:kj5umxuRSHWFUQQVXDHFs6uEx3IwrKx+oVIdvNI4TiI=
+github.com/linkdata/socks5 v0.0.9/go.mod h1:0enIWfnw6ELUyAyxaJ2UbP0i6ZDmCAlj+P+5THjQkQc=
 github.com/wzshiming/socks5 v0.5.1 h1:TRekapqSWrE4QYfGiZ4Ok04wQECuAyQsSUdljvbWO5w=
 github.com/wzshiming/socks5 v0.5.1/go.mod h1:BvCAqlzocQN5xwLjBZDBbvWlrx8sCYSSbHEOf2wZgT0=
