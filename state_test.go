@@ -6,15 +6,14 @@ import (
 	"net"
 	"time"
 
-	"github.com/linkdata/socks5"
 	"github.com/linkdata/socks5/client"
 	"github.com/linkdata/socks5/server"
 	"github.com/linkdata/socks5test"
 )
 
 func init() {
-	socks5.UDPTimeout = time.Millisecond * 10
-	socks5.ListenerTimeout = time.Millisecond * 10
+	server.UDPTimeout = time.Millisecond * 10
+	server.ListenerTimeout = time.Millisecond * 10
 }
 
 var srvfn = func(ctx context.Context, l net.Listener, username, password string) {
