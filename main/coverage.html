@@ -1,0 +1,1022 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>socks5test: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/linkdata/socks5test/auth.go (81.8%)</option>
+				
+				<option value="file1">github.com/linkdata/socks5test/command.go (81.0%)</option>
+				
+				<option value="file2">github.com/linkdata/socks5test/listen.go (75.4%)</option>
+				
+				<option value="file3">github.com/linkdata/socks5test/resolve.go (84.0%)</option>
+				
+				<option value="file4">github.com/linkdata/socks5test/state.go (89.7%)</option>
+				
+				<option value="file5">github.com/linkdata/socks5test/udp.go (72.2%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package socks5test
+
+import (
+        "context"
+        "fmt"
+        "net/http"
+        "net/http/httptest"
+        "strings"
+        "testing"
+        "time"
+)
+
+func Auth_None(t *testing.T, srvfn ServeFunc, clifn ClientFunc) <span class="cov8" title="1">{
+        ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+        defer cancel()
+        ts := New(ctx, t, srvfn, clifn, false)
+        defer ts.Close()
+
+        httpsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
+                _, _ = w.Write([]byte("ok"))
+        }</span>))
+        <span class="cov8" title="1">defer httpsrv.Close()
+
+        httpcli := httpsrv.Client()
+        httpcli.Transport = &amp;http.Transport{DialContext: ts.Client.DialContext}
+        resp, err := httpcli.Get(httpsrv.URL)
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+        <span class="cov8" title="1">_ = resp.Body.Close()</span>
+}
+
+func Auth_NoAcceptable(t *testing.T, srvfn ServeFunc, clifn ClientFunc) <span class="cov8" title="1">{
+        ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+        defer cancel()
+        ts := New(ctx, t, srvfn, clifn, true)
+        defer ts.Close()
+
+        cli, err := clifn(fmt.Sprintf("socks5://%s", ts.HostPort()))
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+
+        <span class="cov8" title="1">httpsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+                _, _ = w.Write([]byte("ok"))
+        }</span>))
+        <span class="cov8" title="1">defer httpsrv.Close()
+
+        httpcli := httpsrv.Client()
+        httpcli.Transport = &amp;http.Transport{DialContext: cli.DialContext}
+        resp, err := httpcli.Get(httpsrv.URL)
+        if resp != nil </span><span class="cov0" title="0">{
+                _ = resp.Body.Close()
+        }</span>
+        <span class="cov8" title="1">if err == nil </span><span class="cov0" title="0">{
+                t.Error("expected error")
+        }</span>
+}
+
+func Auth_Password(t *testing.T, srvfn ServeFunc, clifn ClientFunc) <span class="cov8" title="1">{
+        ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+        defer cancel()
+        ts := New(ctx, t, srvfn, clifn, true)
+        defer ts.Close()
+
+        httpsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
+                _, _ = w.Write([]byte("ok"))
+        }</span>))
+        <span class="cov8" title="1">defer httpsrv.Close()
+
+        httpcli := httpsrv.Client()
+        httpcli.Transport = &amp;http.Transport{DialContext: ts.Client.DialContext}
+        resp, err := httpcli.Get(httpsrv.URL)
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+        <span class="cov8" title="1">_ = resp.Body.Close()</span>
+}
+
+func Auth_InvalidPassword(t *testing.T, srvfn ServeFunc, clifn ClientFunc) <span class="cov8" title="1">{
+        ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+        defer cancel()
+        ts := New(ctx, t, srvfn, clifn, true)
+        defer ts.Close()
+
+        httpsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+                _, _ = w.Write([]byte("ok"))
+        }</span>))
+        <span class="cov8" title="1">defer httpsrv.Close()
+
+        cli, err := clifn(fmt.Sprintf("socks5://u:%s@%s", strings.Repeat("x", 256), ts.HostPort()))
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+
+        <span class="cov8" title="1">httpcli := httpsrv.Client()
+        httpcli.Transport = &amp;http.Transport{DialContext: cli.DialContext}
+        resp, err := httpcli.Get(httpsrv.URL)
+        if resp != nil </span><span class="cov0" title="0">{
+                _ = resp.Body.Close()
+        }</span>
+        <span class="cov8" title="1">if err == nil </span><span class="cov0" title="0">{
+                t.Error("expected error")
+        }</span>
+}
+
+func Auth_WrongPassword(t *testing.T, srvfn ServeFunc, clifn ClientFunc) <span class="cov8" title="1">{
+        ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+        defer cancel()
+        ts := New(ctx, t, srvfn, clifn, true)
+        defer ts.Close()
+
+        httpsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+                _, _ = w.Write([]byte("ok"))
+        }</span>))
+        <span class="cov8" title="1">defer httpsrv.Close()
+
+        cli, err := clifn(fmt.Sprintf("socks5://u:x@%s", ts.HostPort()))
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+
+        <span class="cov8" title="1">httpcli := httpsrv.Client()
+        httpcli.Transport = &amp;http.Transport{DialContext: cli.DialContext}
+        resp, err := httpcli.Get(httpsrv.URL)
+        if resp != nil </span><span class="cov0" title="0">{
+                _ = resp.Body.Close()
+        }</span>
+        <span class="cov8" title="1">if err == nil </span><span class="cov0" title="0">{
+                t.Error("expected error")
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package socks5test
+
+import (
+        "bytes"
+        "context"
+        "net"
+        "testing"
+        "time"
+)
+
+func InvalidCommand(t *testing.T, srvfn ServeFunc, clifn ClientFunc) <span class="cov8" title="1">{
+        ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+        defer cancel()
+        ts := New(ctx, t, srvfn, clifn, false)
+        defer ts.Close()
+
+        conn, err := net.Dial("tcp", ts.Srvlistener.Addr().String())
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+        <span class="cov8" title="1">defer conn.Close()
+
+        req := []byte{
+                5, 1, 0, // SOCKS5, no auth
+                5, 129, 0, // SOCKS5, (invalid command), rsvd
+                1, 127, 0, 0, 1, 100, 0, // IPv4, 127.0.0.1, port 25600
+        }
+        _, err = conn.Write(req)
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+
+        <span class="cov8" title="1">mustRead := func(expect []byte) </span><span class="cov8" title="1">{
+                buf := make([]byte, len(expect))
+                n, err := conn.Read(buf)
+                if err != nil </span><span class="cov0" title="0">{
+                        t.Fatal(err)
+                }</span>
+                <span class="cov8" title="1">if !bytes.Equal(expect, buf[:n]) </span><span class="cov0" title="0">{
+                        t.Fatalf(" got %v\nwant %v\n", buf[:n], expect)
+                }</span>
+        }
+
+        <span class="cov8" title="1">mustRead([]byte{
+                5, 0, // SOCKS5, auth OK
+        })
+        mustRead([]byte{
+                5, 7, 0, // SOCKS5, command-not-supported, rsvd
+        })</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package socks5test
+
+import (
+        "context"
+        "math/rand/v2"
+        "net"
+        "net/http"
+        "strconv"
+        "strings"
+        "sync"
+        "testing"
+        "time"
+)
+
+type tcpAddr string
+
+func (ta tcpAddr) String() string <span class="cov0" title="0">{
+        return string(ta)
+}</span>
+
+func (tcpAddr) Network() string <span class="cov0" title="0">{
+        return "tcp"
+}</span>
+
+func startListen(ctx context.Context, l Listener, port string) (listener net.Listener, err error) <span class="cov8" title="1">{
+        if cl, ok := l.(ContextListener); ok </span><span class="cov8" title="1">{
+                listener, err = cl.ListenContext(ctx, "tcp", port)
+        }</span> else<span class="cov0" title="0"> {
+                listener, err = l.Listen("tcp", port)
+        }</span>
+        <span class="cov8" title="1">return</span>
+}
+
+func makeListener(t *testing.T, l Listener, ctx context.Context) (net.Listener, net.Addr) <span class="cov8" title="1">{
+        listener, err := startListen(ctx, l, ":0")
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+        <span class="cov8" title="1">listenAddr := listener.Addr()
+        if listenAddr == nil </span><span class="cov0" title="0">{
+                _ = listener.Close()
+                listenPort := ":" + strconv.Itoa(10000+rand.IntN(1000)) // #nosec G404
+                t.Errorf("listener.Addr() returned nil, forcing port %q", listenPort)
+                listener, err = startListen(ctx, l, listenPort)
+                if err != nil </span><span class="cov0" title="0">{
+                        t.Fatal(err)
+                }</span>
+                <span class="cov0" title="0">listenAddr = tcpAddr("127.0.0.1" + listenPort)</span>
+        }
+        <span class="cov8" title="1">return listener, listenAddr</span>
+}
+
+func Listen_SingleRequest(t *testing.T, srvfn ServeFunc, clifn ClientFunc) <span class="cov8" title="1">{
+        ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+        defer cancel()
+        ts := New(ctx, t, srvfn, clifn, true)
+        defer ts.Close()
+
+        if cli, ok := ts.Client.(Listener); ok </span><span class="cov8" title="1">{
+                listenPort := ":" + strconv.Itoa(10000+rand.IntN(1000)) // #nosec G404
+                listener, err := cli.Listen("tcp", listenPort)
+                if err != nil </span><span class="cov0" title="0">{
+                        t.Fatal(err)
+                }</span>
+                <span class="cov8" title="1">defer listener.Close()
+
+                listenAddr := listener.Addr()
+                if listenAddr == nil </span><span class="cov0" title="0">{
+                        listenAddr = tcpAddr("127.0.0.1" + listenPort)
+                        t.Errorf("listener.Addr() returned nil, faking it with %q", listenAddr.String())
+                }</span> else<span class="cov8" title="1"> {
+                        t.Log("listenAddr", listenAddr.String())
+                }</span>
+
+                <span class="cov8" title="1">errCh := make(chan error)
+                go func() </span><span class="cov8" title="1">{
+                        defer close(errCh)
+                        errCh &lt;- http.Serve(listener, nil) // #nosec G114
+                }</span>()
+
+                <span class="cov8" title="1">for ctx.Err() == nil </span><span class="cov8" title="1">{
+                        resp, err := http.Get("http://" + listenAddr.String())
+                        if err == nil </span><span class="cov8" title="1">{
+                                _ = resp.Body.Close()
+                                break</span>
+                        }
+                        <span class="cov0" title="0">if !strings.Contains(err.Error(), "connection refused") </span><span class="cov0" title="0">{
+                                t.Fatal(err)
+                        }</span>
+                }
+
+                // closing the listener must stop http.Serve()
+                <span class="cov8" title="1">err = listener.Close()
+                if err != nil </span><span class="cov0" title="0">{
+                        t.Fatal(err)
+                }</span>
+
+                <span class="cov8" title="1">select </span>{
+                case &lt;-time.NewTimer(time.Second).C:<span class="cov0" title="0">
+                        t.Error("http.Serve did not stop even though listener was closed")</span>
+                case err = &lt;-errCh:<span class="cov8" title="1">
+                        if err != nil </span><span class="cov8" title="1">{
+                                t.Log(err)
+                        }</span>
+                }
+
+                // wait until we get "connection refused"
+                <span class="cov8" title="1">for range 10 </span><span class="cov8" title="1">{
+                        resp, err := http.Get("http://" + listenAddr.String())
+                        if err == nil </span><span class="cov0" title="0">{
+                                _ = resp.Body.Close()
+                        }</span> else<span class="cov8" title="1"> {
+                                if strings.Contains(err.Error(), "connection refused") </span><span class="cov8" title="1">{
+                                        if err = ctx.Err(); err != nil </span><span class="cov0" title="0">{
+                                                t.Error(err)
+                                        }</span>
+                                        <span class="cov8" title="1">return</span>
+                                }
+                        }
+                }
+                <span class="cov0" title="0">t.Error(err)</span>
+        }
+}
+
+func Listen_SerialRequests(t *testing.T, srvfn ServeFunc, clifn ClientFunc) <span class="cov8" title="1">{
+        ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+        defer cancel()
+        ts := New(ctx, t, srvfn, clifn, true)
+        defer ts.Close()
+
+        if cli, ok := ts.Client.(Listener); ok </span><span class="cov8" title="1">{
+                listener, listenAddr := makeListener(t, cli, ctx)
+                defer listener.Close()
+
+                errCh := make(chan error)
+                go func() </span><span class="cov8" title="1">{
+                        defer close(errCh)
+                        errCh &lt;- http.Serve(listener, nil) // #nosec G114
+                }</span>()
+
+                <span class="cov8" title="1">for ctx.Err() == nil </span><span class="cov8" title="1">{
+                        resp, err := http.Get("http://" + listenAddr.String())
+                        if err == nil </span><span class="cov8" title="1">{
+                                _ = resp.Body.Close()
+                                break</span>
+                        }
+                        <span class="cov0" title="0">if !strings.Contains(err.Error(), "connection refused") </span><span class="cov0" title="0">{
+                                t.Fatal(err)
+                        }</span>
+                }
+
+                <span class="cov8" title="1">for i := range 10 </span><span class="cov8" title="1">{
+                        resp, err := http.Get("http://" + listenAddr.String())
+                        if err != nil </span><span class="cov0" title="0">{
+                                t.Error(i, err)
+                        }</span> else<span class="cov8" title="1"> {
+                                _ = resp.Body.Close()
+                        }</span>
+                }
+
+                <span class="cov8" title="1">err := listener.Close()
+                if err != nil </span><span class="cov0" title="0">{
+                        t.Fatal(err)
+                }</span>
+
+                <span class="cov8" title="1">select </span>{
+                case &lt;-time.NewTimer(time.Second).C:<span class="cov0" title="0">
+                        t.Error("http.Serve did not stop")</span>
+                case err = &lt;-errCh:<span class="cov8" title="1">
+                        if err != nil </span><span class="cov8" title="1">{
+                                t.Log(err)
+                        }</span>
+                }
+        }
+}
+
+func Listen_ParallelRequests(t *testing.T, srvfn ServeFunc, clifn ClientFunc) <span class="cov8" title="1">{
+        ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+        defer cancel()
+        ts := New(ctx, t, srvfn, clifn, true)
+        defer ts.Close()
+
+        if cli, ok := ts.Client.(Listener); ok </span><span class="cov8" title="1">{
+                listener, listenAddr := makeListener(t, cli, ctx)
+                defer listener.Close()
+
+                errCh := make(chan error)
+                go func() </span><span class="cov8" title="1">{
+                        defer close(errCh)
+                        errCh &lt;- http.Serve(listener, nil) // #nosec G114
+                }</span>()
+
+                <span class="cov8" title="1">for ctx.Err() == nil </span><span class="cov8" title="1">{
+                        resp, err := http.Get("http://" + listenAddr.String())
+                        if err == nil </span><span class="cov8" title="1">{
+                                _ = resp.Body.Close()
+                                break</span>
+                        }
+                        <span class="cov0" title="0">if !strings.Contains(err.Error(), "connection refused") </span><span class="cov0" title="0">{
+                                t.Fatal(err)
+                        }</span>
+                }
+
+                <span class="cov8" title="1">var wg sync.WaitGroup
+                for i := range 10 </span><span class="cov8" title="1">{
+                        wg.Add(1)
+                        go func() </span><span class="cov8" title="1">{
+                                defer wg.Done()
+                                resp, err := http.Get("http://" + listenAddr.String())
+                                if err != nil </span><span class="cov0" title="0">{
+                                        t.Error(i, err)
+                                }</span> else<span class="cov8" title="1"> {
+                                        _ = resp.Body.Close()
+                                }</span>
+                        }()
+                }
+                <span class="cov8" title="1">wg.Wait()
+
+                err := listener.Close()
+                if err != nil </span><span class="cov0" title="0">{
+                        t.Fatal(err)
+                }</span>
+
+                <span class="cov8" title="1">select </span>{
+                case &lt;-time.NewTimer(time.Second).C:<span class="cov0" title="0">
+                        t.Error("http.Serve did not stop")</span>
+                case err = &lt;-errCh:<span class="cov8" title="1">
+                        if err != nil </span><span class="cov8" title="1">{
+                                t.Log(err)
+                        }</span>
+                }
+        }
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package socks5test
+
+import (
+        "context"
+        "fmt"
+        "net/http"
+        "net/http/httptest"
+        "strings"
+        "testing"
+        "time"
+)
+
+func Resolve_Remote(t *testing.T, srvfn ServeFunc, clifn ClientFunc) <span class="cov8" title="1">{
+        ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+        defer cancel()
+        ts := New(ctx, t, srvfn, clifn, false)
+        defer ts.Close()
+
+        cli, err := clifn(fmt.Sprintf("socks5h://%s", ts.HostPort()))
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+
+        <span class="cov8" title="1">httpsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
+                _, _ = w.Write([]byte("ok"))
+        }</span>))
+        <span class="cov8" title="1">defer httpsrv.Close()
+
+        httpcli := httpsrv.Client()
+        httpcli.Transport = &amp;http.Transport{DialContext: cli.DialContext}
+        resp, err := httpcli.Get(strings.ReplaceAll(httpsrv.URL, "127.0.0.1", "localhost"))
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+        <span class="cov8" title="1">_ = resp.Body.Close()</span>
+}
+
+func Resolve_Remote_InvalidHostname(t *testing.T, srvfn ServeFunc, clifn ClientFunc) <span class="cov8" title="1">{
+        ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+        defer cancel()
+        ts := New(ctx, t, srvfn, clifn, false)
+        defer ts.Close()
+
+        cli, err := clifn(fmt.Sprintf("socks5h://%s", ts.HostPort()))
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+
+        <span class="cov8" title="1">conn, err := cli.DialContext(ctx, "tcp", "!:1234")
+        if conn != nil </span><span class="cov0" title="0">{
+                _ = conn.Close()
+        }</span>
+        <span class="cov8" title="1">if err == nil </span><span class="cov0" title="0">{
+                t.Error("expected error")
+        }</span>
+}
+
+func Resolve_Local(t *testing.T, srvfn ServeFunc, clifn ClientFunc) <span class="cov8" title="1">{
+        ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+        defer cancel()
+        ts := New(ctx, t, srvfn, clifn, false)
+        defer ts.Close()
+
+        httpsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
+                _, _ = w.Write([]byte("ok"))
+        }</span>))
+        <span class="cov8" title="1">defer httpsrv.Close()
+
+        httpcli := httpsrv.Client()
+        httpcli.Transport = &amp;http.Transport{DialContext: ts.Client.DialContext}
+        resp, err := httpcli.Get(strings.ReplaceAll(httpsrv.URL, "127.0.0.1", "localhost"))
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+        <span class="cov8" title="1">_ = resp.Body.Close()</span>
+}
+
+func Resolve_Local_InvalidHostname(t *testing.T, srvfn ServeFunc, clifn ClientFunc) <span class="cov8" title="1">{
+        ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+        defer cancel()
+        ts := New(ctx, t, srvfn, clifn, false)
+        defer ts.Close()
+
+        conn, err := ts.Client.DialContext(ctx, "tcp", "!:1234")
+        if conn != nil </span><span class="cov0" title="0">{
+                _ = conn.Close()
+        }</span>
+        <span class="cov8" title="1">if err == nil </span><span class="cov0" title="0">{
+                t.Error("expected error")
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package socks5test
+
+import (
+        "context"
+        "net"
+        "testing"
+        "time"
+)
+
+type ContextDialer interface {
+        DialContext(ctx context.Context, network, address string) (conn net.Conn, err error)
+}
+
+type ClientFunc func(urlstr string) (cli ContextDialer, err error)
+type ServeFunc func(ctx context.Context, l net.Listener, username, password string)
+
+type State struct {
+        ctx         context.Context
+        t           *testing.T
+        Username    string
+        Password    string
+        Srvlistener net.Listener
+        srvClosedCh chan struct{}
+        Client      ContextDialer
+        ClientFunc
+}
+
+func New(ctx context.Context, t *testing.T, srvfn ServeFunc, clifn ClientFunc, needauth bool) (ts *State) <span class="cov8" title="1">{
+        t.Helper()
+        var lc net.ListenConfig
+        srvlistener, err := lc.Listen(ctx, "tcp", ":0")
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+
+        <span class="cov8" title="1">urlstr := "socks5://"
+        username := ""
+        password := ""
+        if needauth </span><span class="cov8" title="1">{
+                username = "u"
+                password = "p"
+                urlstr += "u:p@"
+        }</span>
+
+        <span class="cov8" title="1">urlstr += srvlistener.Addr().String()
+        cli, err := clifn(urlstr)
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+
+        <span class="cov8" title="1">ts = &amp;State{
+                ctx:         ctx,
+                t:           t,
+                Username:    username,
+                Password:    password,
+                Srvlistener: srvlistener,
+                ClientFunc:  clifn,
+                Client:      cli,
+                srvClosedCh: make(chan struct{}),
+        }
+        go func() </span><span class="cov8" title="1">{
+                defer close(ts.srvClosedCh)
+                srvfn(ctx, srvlistener, username, password)
+        }</span>()
+
+        <span class="cov8" title="1">return</span>
+}
+
+func (ts *State) HostPort() (hostport string) <span class="cov8" title="1">{
+        return ts.Srvlistener.Addr().String()
+}</span>
+
+func (ts *State) Close() <span class="cov8" title="1">{
+        if ts.Srvlistener != nil </span><span class="cov8" title="1">{
+                _ = ts.Srvlistener.Close()
+                ts.Srvlistener = nil
+                tmr := time.NewTimer(time.Second)
+                defer tmr.Stop()
+                select </span>{
+                case &lt;-tmr.C:<span class="cov0" title="0">
+                        ts.t.Error("server did not stop")</span>
+                case &lt;-ts.srvClosedCh:<span class="cov8" title="1"></span>
+                }
+        }
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package socks5test
+
+import (
+        "bytes"
+        "context"
+        "crypto/rand"
+        "encoding/binary"
+        "encoding/hex"
+        "fmt"
+        "io"
+        "log/slog"
+        "net"
+        "net/netip"
+        "strconv"
+        "strings"
+        "testing"
+        "time"
+)
+
+func udpEchoServer(conn net.PacketConn) <span class="cov8" title="1">{
+        var buf [32768 - 32]byte
+        var err error
+        slog.Info("udpEchoServer: start", "conn", conn.LocalAddr().String())
+        for err == nil </span><span class="cov8" title="1">{
+                var n int
+                var addr net.Addr
+                if n, addr, err = conn.ReadFrom(buf[:]); err == nil </span><span class="cov8" title="1">{
+                        slog.Info("udpEchoServer: readfrom", "conn", conn.LocalAddr().String(), "addr", addr, "data", hex.EncodeToString(buf[:n]))
+                        n, err = conn.WriteTo(buf[:n], addr)
+                        if err != nil </span><span class="cov0" title="0">{
+                                panic(err)</span>
+                        }
+                        <span class="cov8" title="1">slog.Info("udpEchoServer: writeto", "conn", conn.LocalAddr().String(), "addr", addr, "data", hex.EncodeToString(buf[:n]))</span>
+                }
+        }
+        <span class="cov8" title="1">slog.Info("udpEchoServer: stop", "conn", conn.LocalAddr().String(), "error", err)</span>
+}
+
+func UDP_Single(t *testing.T, srvfn ServeFunc, clifn ClientFunc) <span class="cov8" title="1">{
+        ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+        defer cancel()
+        ts := New(ctx, t, srvfn, clifn, true)
+        defer ts.Close()
+
+        packet, err := net.ListenPacket("udp", "127.0.0.1:0")
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+        <span class="cov8" title="1">defer packet.Close()
+
+        go udpEchoServer(packet)
+
+        var conn net.Conn
+        if dialer, ok := ts.Client.(interface {
+                Dial(string, string) (net.Conn, error)
+        }); ok </span><span class="cov8" title="1">{
+                conn, err = dialer.Dial("udp", packet.LocalAddr().String())
+        }</span> else<span class="cov0" title="0"> {
+                conn, err = ts.Client.DialContext(ctx, "udp", packet.LocalAddr().String())
+        }</span>
+        <span class="cov8" title="1">if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+
+        <span class="cov8" title="1">want := make([]byte, 16)
+        _, err = rand.Read(want)
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+        <span class="cov8" title="1">_, err = conn.Write(want)
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+
+        <span class="cov8" title="1">got := make([]byte, len(want))
+        _, err = conn.Read(got)
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+        <span class="cov8" title="1">if !bytes.Equal(want, got) </span><span class="cov0" title="0">{
+                t.Errorf("UDP echo wrong\n got: %x\nwant: %x\n", got, want)
+        }</span>
+
+        <span class="cov8" title="1">remoteAddr := conn.RemoteAddr()
+        if remoteAddr != nil </span><span class="cov8" title="1">{
+                if x := remoteAddr.String(); x != packet.LocalAddr().String() </span><span class="cov0" title="0">{
+                        t.Error(x)
+                }</span>
+                <span class="cov8" title="1">if x := remoteAddr.Network(); x != packet.LocalAddr().Network() </span><span class="cov0" title="0">{
+                        t.Error(x)
+                }</span>
+        } else<span class="cov0" title="0"> {
+                t.Log("UDP conn returned nil for RemoteAddr")
+        }</span>
+}
+
+func UDP_Multiple(t *testing.T, srvfn ServeFunc, clifn ClientFunc) <span class="cov8" title="1">{
+        ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+        defer cancel()
+        ts := New(ctx, t, srvfn, clifn, true)
+        defer ts.Close()
+
+        // backend UDP server which we'll use SOCKS5 to connect to
+        newUDPEchoServer := func() net.PacketConn </span><span class="cov8" title="1">{
+                listener, err := net.ListenPacket("udp", "127.0.0.1:0")
+                if err != nil </span><span class="cov0" title="0">{
+                        t.Fatal(err)
+                }</span>
+                <span class="cov8" title="1">go udpEchoServer(listener)
+                return listener</span>
+        }
+
+        <span class="cov8" title="1">const echoServerNumber = 5
+        echoServerListener := make([]net.PacketConn, echoServerNumber)
+        for i := 0; i &lt; echoServerNumber; i++ </span><span class="cov8" title="1">{
+                echoServerListener[i] = newUDPEchoServer()
+        }</span>
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{
+                for i := 0; i &lt; echoServerNumber; i++ </span><span class="cov8" title="1">{
+                        _ = echoServerListener[i].Close()
+                }</span>
+        }()
+
+        <span class="cov8" title="1">conn, err := ts.Client.DialContext(ctx, "udp", "0.0.0.0:0")
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+        <span class="cov8" title="1">defer conn.Close()
+
+        pc, ok := conn.(net.PacketConn)
+
+        if !ok </span><span class="cov0" title="0">{
+                t.Skip("client is not a net.PacketConn")
+        }</span>
+
+        <span class="cov8" title="1">for i := 0; i &lt; echoServerNumber-1; i++ </span><span class="cov8" title="1">{
+                echoAddress := echoServerListener[i].LocalAddr()
+                requestBody := []byte(fmt.Sprintf("Test %d", i))
+                slog.Info("echo to", "addr", echoAddress)
+                if err != nil </span><span class="cov0" title="0">{
+                        t.Fatal(err)
+                }</span>
+                <span class="cov8" title="1">_, err = pc.WriteTo(requestBody, echoAddress)
+                if err != nil </span><span class="cov0" title="0">{
+                        t.Fatal(err)
+                }</span>
+                <span class="cov8" title="1">responseBody := make([]byte, len(requestBody)*2)
+                var n int
+                var addr net.Addr
+                n, addr, err = pc.ReadFrom(responseBody)
+                if err != nil </span><span class="cov0" title="0">{
+                        t.Fatal(err)
+                }</span>
+                <span class="cov8" title="1">responseBody = responseBody[:n]
+                if x := addr.String(); x != echoAddress.String() </span><span class="cov0" title="0">{
+                        t.Error(x)
+                }</span>
+                <span class="cov8" title="1">if !bytes.Equal(requestBody, responseBody) </span><span class="cov0" title="0">{
+                        t.Fatalf("UDP echo wrong from %v\n got: %x\nwant: %x", echoAddress, responseBody, requestBody)
+                }</span>
+        }
+
+        // allow some time to pass to let server close ports
+        <span class="cov8" title="1">time.Sleep(time.Millisecond * 100)
+
+        echoServer := echoServerListener[echoServerNumber-1]
+        echoAddress := echoServer.LocalAddr()
+        requestBody := []byte(fmt.Sprintf("Test %d", echoServerNumber-1))
+        _, err = pc.WriteTo(requestBody, echoAddress)
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+        <span class="cov8" title="1">responseBody := make([]byte, len(requestBody)*2)
+        var n int
+        var addr net.Addr
+        n, addr, err = pc.ReadFrom(responseBody)
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+        <span class="cov8" title="1">responseBody = responseBody[:n]
+        if x := addr.String(); x != echoAddress.String() </span><span class="cov0" title="0">{
+                t.Error(x)
+        }</span>
+        <span class="cov8" title="1">if !bytes.Equal(requestBody, responseBody) </span><span class="cov0" title="0">{
+                t.Errorf("%v got %d: %q want: %q", echoAddress, len(responseBody), responseBody, requestBody)
+        }</span>
+        <span class="cov8" title="1">if err = conn.Close(); err != nil </span><span class="cov0" title="0">{
+                t.Error(err)
+        }</span>
+}
+
+// UDP_InvalidPacket tests that sending an invalid SOCKS5 UDP packet to
+// the servers associated UDP port is either ignored or returns an error.
+func UDP_InvalidPacket(t *testing.T, srvfn ServeFunc, clifn ClientFunc) <span class="cov8" title="1">{
+        ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+        defer cancel()
+        ts := New(ctx, t, srvfn, clifn, false)
+        defer ts.Close()
+
+        conn, err := net.Dial("tcp", ts.HostPort())
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+
+        <span class="cov8" title="1">req := []byte{
+                5, 1, 0, // SOCKS5, no auth
+                5, 3, 0, // SOCKS5, associate, rsvd
+                1, 127, 0, 0, 1, 100, 0, // IPv4, 127.0.0.1, port 25600
+        }
+        _, err = conn.Write(req)
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+
+        <span class="cov8" title="1">mustRead := func(expect []byte) </span><span class="cov8" title="1">{
+                buf := make([]byte, len(expect))
+                n, err := conn.Read(buf)
+                if err != nil </span><span class="cov0" title="0">{
+                        t.Fatal(err)
+                }</span>
+                <span class="cov8" title="1">if !bytes.Equal(expect, buf[:n]) </span><span class="cov0" title="0">{
+                        t.Fatalf(" got %v\nwant %v\n", buf[:n], expect)
+                }</span>
+        }
+
+        <span class="cov8" title="1">readByte := func() byte </span><span class="cov8" title="1">{
+                buf := make([]byte, 1)
+                n, err := conn.Read(buf)
+                if err != nil || n != 1 </span><span class="cov0" title="0">{
+                        t.Fatal(err, n)
+                }</span>
+                <span class="cov8" title="1">return buf[0]</span>
+        }
+
+        <span class="cov8" title="1">mustRead([]byte{
+                5, 0, // SOCKS5, auth OK
+        })
+        mustRead([]byte{
+                5, 0, 0, // SOCKS5, success, rsvd
+        })
+
+        var host string
+        var port uint16
+        switch c := readByte(); c </span>{
+        case 1:<span class="cov0" title="0"> // IPv4
+                var ip [4]byte
+                if _, err = io.ReadFull(conn, ip[:]); err != nil </span><span class="cov0" title="0">{
+                        t.Fatal(err)
+                }</span>
+                <span class="cov0" title="0">host = netip.AddrFrom4(ip).String()</span>
+        case 3:<span class="cov0" title="0"> // domain
+                l := readByte()
+                buf := make([]byte, int(l))
+                if _, err = io.ReadFull(conn, buf); err != nil </span><span class="cov0" title="0">{
+                        t.Fatal(err)
+                }</span>
+                <span class="cov0" title="0">host = string(buf)</span>
+        case 4:<span class="cov8" title="1"> // IPv6
+                var ip [16]byte
+                if _, err = io.ReadFull(conn, ip[:]); err == nil </span><span class="cov8" title="1">{
+                        host = netip.AddrFrom16(ip).String()
+                }</span>
+        default:<span class="cov0" title="0">
+                t.Fatalf("%q", c)</span>
+        }
+        <span class="cov8" title="1">var portBytes [2]byte
+        if _, err = io.ReadFull(conn, portBytes[:]); err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+        <span class="cov8" title="1">port = binary.BigEndian.Uint16(portBytes[:])
+
+        hostport := net.JoinHostPort(host, strconv.Itoa(int(port)))
+        t.Log(hostport)
+        udpconn, err := net.Dial("udp", hostport)
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err, hostport)
+        }</span>
+        <span class="cov8" title="1">defer udpconn.Close()
+
+        _, err = udpconn.Write([]byte{
+                0, 0, 0, // valid UDP header
+                0, // invalid address type
+        })
+        if err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+        <span class="cov8" title="1">if err = udpconn.SetDeadline(time.Now().Add(time.Millisecond * 100)); err != nil </span><span class="cov0" title="0">{
+                t.Fatal(err)
+        }</span>
+        <span class="cov8" title="1">buf := make([]byte, 3)
+        n, err := udpconn.Read(buf)
+        if err == nil </span><span class="cov0" title="0">{
+                if n &lt; 3 </span><span class="cov0" title="0">{
+                        t.Error("got a short reply")
+                }</span> else<span class="cov0" title="0"> {
+                        if buf[0] != 5 || buf[2] != 0 </span><span class="cov0" title="0">{
+                                t.Error("invalid UDP header")
+                        }</span>
+                        <span class="cov0" title="0">if buf[1] == 0 </span><span class="cov0" title="0">{
+                                t.Errorf("expected error code")
+                        }</span>
+                }
+        } else<span class="cov8" title="1"> {
+                if !(strings.Contains(err.Error(), "timeout") || strings.Contains(err.Error(), "refused")) </span><span class="cov0" title="0">{
+                        t.Error(err)
+                }</span>
+        }
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
