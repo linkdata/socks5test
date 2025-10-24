@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"testing"
+	"time"
 
 	"github.com/linkdata/socks5test"
 	"github.com/wzshiming/socks5"
@@ -12,7 +13,8 @@ import (
 
 var srvfn = func(ctx context.Context, l net.Listener, username, password string) {
 	server := &socks5.Server{
-		Logger: log.Default(),
+		Logger:                 log.Default(),
+		ListenBindReuseTimeout: time.Second / 2,
 	}
 	if username != "" {
 		server.Authentication = socks5.UserAuth(username, password)
@@ -78,7 +80,6 @@ func TestUDP_Single(t *testing.T) {
 }
 
 func TestUDP_Multiple(t *testing.T) {
-	t.Skip("does not support net.PacketConn WriteTo and ReadFrom with other addresses")
 	socks5test.UDP_Multiple(t, srvfn, clifn)
 }
 

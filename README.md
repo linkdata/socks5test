@@ -14,5 +14,5 @@ The `examples` directory runs the tests for other packages:
 * https://github.com/armon/go-socks5 (PASS, server only, lacks ASSOCIATE)
 * https://github.com/things-go/go-socks5 (PASS, server only, lacks BIND)
 * https://golang.org/x/net (PASS, client only, lacks BIND and ASSOCIATE)
-* https://github.com/wzshiming/socks5 (v0.5.1: FAIL some tests, limited ASSOCIATE support, sometimes fails race checker)
+* https://github.com/wzshiming/socks5 (v0.6.0: PASS; v0.5.1: FAIL some tests, limited ASSOCIATE support, sometimes fails race checker)
 * https://github.com/txthinking/socks5 (FAIL some tests, broken ASSOCIATE support)
